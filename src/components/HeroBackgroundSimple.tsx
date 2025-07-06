@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 
 const HeroBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number>(0);
   const particlesRef = useRef<any[]>([]);
   const gridRef = useRef<any[]>([]);
   const timeRef = useRef(0);

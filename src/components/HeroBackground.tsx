@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 interface Particle {
   x: number;
@@ -46,7 +46,7 @@ interface Ribbon {
 
 const HeroBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number>(0);
   const mouseRef = useRef({ x: 0, y: 0 });
   const timeRef = useRef(0);
   const particlesRef = useRef<Particle[]>([]);

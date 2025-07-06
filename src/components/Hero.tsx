@@ -6,7 +6,7 @@ import './Hero.css';
 const Hero: React.FC = () => {
   const [selectedRole, setSelectedRole] = useState<string>('');
   const [typedText, setTypedText] = useState<string>('');
-  const [isTyping, setIsTyping] = useState<boolean>(true);
+  const [isTyping] = useState<boolean>(true);
   const [currentWordIndex, setCurrentWordIndex] = useState<number>(0);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   
@@ -14,7 +14,7 @@ const Hero: React.FC = () => {
   const currentWord = words[currentWordIndex];
 
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
+    let timeoutId: number;
     
     if (!isDeleting && typedText.length < currentWord.length) {
       // Typing
