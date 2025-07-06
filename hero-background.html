@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creative Portfolio - Animated Hero Background</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+        }
+
+        #heroCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            background: radial-gradient(circle at 50% 50%, #0f0f23 0%, #000000 100%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .content-wrapper {
+            text-align: center;
+            color: white;
+            pointer-events: auto;
+        }
+
+        .profile-halo {
+            position: absolute;
+            top: 50%;
+            left: 30%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 255, 255, 0.1) 0%, rgba(255, 20, 147, 0.05) 50%, transparent 100%);
+            animation: pulseHalo 4s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pulseHalo {
+            0%, 100% { 
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.8;
+            }
+            50% { 
+                transform: translate(-50%, -50%) scale(1.1);
+                opacity: 0.6;
+            }
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            background: linear-gradient(45deg, #ffffff, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .cta-button {
+            padding: 12px 30px;
+            background: linear-gradient(45deg, #00ffff, #ff1493);
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 30px rgba(0, 255, 255, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+            .profile-halo {
+                left: 50%;
+                top: 25%;
+                width: 150px;
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="heroCanvas"></canvas>
+    
+    <div class="profile-halo"></div>
+    
+    <div class="hero-content">
+        <div class="content-wrapper">
+            <h1 class="hero-title">Creative Vision</h1>
+            <p class="hero-subtitle">3D Animation • 2D Art • Graphic Design</p>
+            <button class="cta-button">View Portfolio</button>
+        </div>
+    </div>
+
+    <script>
+        class HeroBackground {
+            constructor() {
+                this.canvas = document.getElementById('heroCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.mouse = { x: 0, y: 0 };
+                this.time = 0;
+                this.particles = [];
+                this.gridLines = [];
+                this.shapes = [];
+                this.ribbons = [];
+                
+                this.init();
+                this.createParticles();
+                this.createGridLines();
+                this.createShapes();
+                this.createRibbons();
+                this.animate();
+                this.setupEventListeners();
+            }
+
+            init() {
+                this.resize();
+                window.addEventListener('resize', () => this.resize());
+            }
+
+            resize() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+            }
+
+            setupEventListeners() {
+                document.addEventListener('mousemove', (e) => {
+                    this.mouse.x = e.clientX;
+                    this.mouse.y = e.clientY;
+                });
+            }
+
+            createParticles() {
+                for (let i = 0; i < 100; i++) {
+                    this.particles.push({
+                        x: Math.random() * this.canvas.width,
+                        y: Math.random() * this.canvas.height,
+                        vx: (Math.random() - 0.5) * 0.5,
+                        vy: (Math.random() - 0.5) * 0.5,
+                        size: Math.random() * 3 + 1,
+                        color: this.getRandomColor(),
+                        alpha: Math.random() * 0.8 + 0.2,
+                        life: Math.random() * 1000
+                    });
+                }
+            }
+
+            createGridLines() {
+                const spacing = 80;
+                for (let x = 0; x < this.canvas.width; x += spacing) {
+                    this.gridLines.push({
+                        type: 'vertical',
+                        x: x,
+                        alpha: 0.1,
+                        offset: Math.random() * Math.PI * 2
+                    });
+                }
+                for (let y = 0; y < this.canvas.height; y += spacing) {
+                    this.gridLines.push({
+                        type: 'horizontal',
+                        y: y,
+                        alpha: 0.1,
+                        offset: Math.random() * Math.PI * 2
+                    });
+                }
+            }
+
+            createShapes() {
+                const shapeTypes = ['wireframeSphere', 'glassyCube', 'origami'];
+                for (let i = 0; i < 6; i++) {
+                    this.shapes.push({
+                        type: shapeTypes[Math.floor(Math.random() * shapeTypes.length)],
+                        x: Math.random() * this.canvas.width,
+                        y: Math.random() * this.canvas.height,
+                        size: Math.random() * 60 + 30,
+                        rotation: 0,
+                        rotationSpeed: (Math.random() - 0.5) * 0.02,
+                        alpha: 0.3,
+                        drift: {
+                            x: (Math.random() - 0.5) * 0.3,
+                            y: (Math.random() - 0.5) * 0.3
+                        }
+                    });
+                }
+            }
+
+            createRibbons() {
+                for (let i = 0; i < 3; i++) {
+                    const points = [];
+                    const segments = 20;
+                    for (let j = 0; j < segments; j++) {
+                        points.push({
+                            x: (j / segments) * this.canvas.width,
+                            y: this.canvas.height * 0.5 + Math.sin(j * 0.5) * 100,
+                            originalY: this.canvas.height * 0.5 + Math.sin(j * 0.5) * 100
+                        });
+                    }
+                    this.ribbons.push({
+                        points: points,
+                        color: this.getRandomColor(),
+                        alpha: 0.15,
+                        wave: Math.random() * Math.PI * 2,
+                        amplitude: 50 + Math.random() * 50
+                    });
+                }
+            }
+
+            getRandomColor() {
+                const colors = ['#00ffff', '#ff1493', '#ffd700', '#9400d3', '#00ff7f'];
+                return colors[Math.floor(Math.random() * colors.length)];
+            }
+
+            drawParticles() {
+                this.particles.forEach(particle => {
+                    // Mouse interaction
+                    const dx = this.mouse.x - particle.x;
+                    const dy = this.mouse.y - particle.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 150) {
+                        const force = (150 - distance) / 150;
+                        particle.vx += dx * force * 0.0001;
+                        particle.vy += dy * force * 0.0001;
+                    }
+
+                    // Update position
+                    particle.x += particle.vx;
+                    particle.y += particle.vy;
+                    particle.life += 1;
+
+                    // Wrap around screen
+                    if (particle.x < 0) particle.x = this.canvas.width;
+                    if (particle.x > this.canvas.width) particle.x = 0;
+                    if (particle.y < 0) particle.y = this.canvas.height;
+                    if (particle.y > this.canvas.height) particle.y = 0;
+
+                    // Pulsing effect
+                    const pulse = Math.sin(this.time * 0.005 + particle.life * 0.01) * 0.5 + 0.5;
+                    
+                    // Draw particle
+                    this.ctx.save();
+                    this.ctx.globalAlpha = particle.alpha * pulse;
+                    this.ctx.fillStyle = particle.color;
+                    this.ctx.shadowBlur = 20;
+                    this.ctx.shadowColor = particle.color;
+                    this.ctx.beginPath();
+                    this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    this.ctx.restore();
+                });
+            }
+
+            drawGridLines() {
+                this.ctx.save();
+                this.ctx.strokeStyle = '#00ffff';
+                this.ctx.lineWidth = 1;
+                
+                this.gridLines.forEach(line => {
+                    const wave = Math.sin(this.time * 0.003 + line.offset) * 0.5 + 0.5;
+                    this.ctx.globalAlpha = line.alpha * wave;
+                    
+                    this.ctx.beginPath();
+                    if (line.type === 'vertical') {
+                        this.ctx.moveTo(line.x, 0);
+                        this.ctx.lineTo(line.x, this.canvas.height);
+                    } else {
+                        this.ctx.moveTo(0, line.y);
+                        this.ctx.lineTo(this.canvas.width, line.y);
+                    }
+                    this.ctx.stroke();
+                });
+                this.ctx.restore();
+            }
+
+            drawShapes() {
+                this.shapes.forEach(shape => {
+                    this.ctx.save();
+                    this.ctx.globalAlpha = shape.alpha;
+                    this.ctx.translate(shape.x, shape.y);
+                    this.ctx.rotate(shape.rotation);
+                    
+                    shape.rotation += shape.rotationSpeed;
+                    shape.x += shape.drift.x;
+                    shape.y += shape.drift.y;
+                    
+                    // Wrap around
+                    if (shape.x < -100) shape.x = this.canvas.width + 100;
+                    if (shape.x > this.canvas.width + 100) shape.x = -100;
+                    if (shape.y < -100) shape.y = this.canvas.height + 100;
+                    if (shape.y > this.canvas.height + 100) shape.y = -100;
+
+                    switch (shape.type) {
+                        case 'wireframeSphere':
+                            this.drawWireframeSphere(shape.size);
+                            break;
+                        case 'glassyCube':
+                            this.drawGlassyCube(shape.size);
+                            break;
+                        case 'origami':
+                            this.drawOrigami(shape.size);
+                            break;
+                    }
+                    
+                    this.ctx.restore();
+                });
+            }
+
+            drawWireframeSphere(size) {
+                this.ctx.strokeStyle = '#ff1493';
+                this.ctx.lineWidth = 1;
+                this.ctx.shadowBlur = 10;
+                this.ctx.shadowColor = '#ff1493';
+                
+                // Draw meridians
+                for (let i = 0; i < 8; i++) {
+                    this.ctx.beginPath();
+                    this.ctx.ellipse(0, 0, size, size * Math.cos(i * Math.PI / 8), i * Math.PI / 4, 0, Math.PI * 2);
+                    this.ctx.stroke();
+                }
+                
+                // Draw parallels
+                for (let i = 1; i < 4; i++) {
+                    const radius = size * Math.sin(i * Math.PI / 4);
+                    this.ctx.beginPath();
+                    this.ctx.arc(0, 0, radius, 0, Math.PI * 2);
+                    this.ctx.stroke();
+                }
+            }
+
+            drawGlassyCube(size) {
+                this.ctx.strokeStyle = '#00ffff';
+                this.ctx.fillStyle = 'rgba(0, 255, 255, 0.1)';
+                this.ctx.lineWidth = 2;
+                this.ctx.shadowBlur = 15;
+                this.ctx.shadowColor = '#00ffff';
+                
+                const half = size / 2;
+                
+                // Front face
+                this.ctx.beginPath();
+                this.ctx.rect(-half, -half, size, size);
+                this.ctx.fill();
+                this.ctx.stroke();
+                
+                // 3D effect lines
+                this.ctx.beginPath();
+                this.ctx.moveTo(half, -half);
+                this.ctx.lineTo(half + 20, -half - 20);
+                this.ctx.lineTo(-half + 20, -half - 20);
+                this.ctx.lineTo(-half, -half);
+                this.ctx.stroke();
+                
+                this.ctx.beginPath();
+                this.ctx.moveTo(half, half);
+                this.ctx.lineTo(half + 20, half - 20);
+                this.ctx.lineTo(half + 20, -half - 20);
+                this.ctx.stroke();
+            }
+
+            drawOrigami(size) {
+                this.ctx.strokeStyle = '#ffd700';
+                this.ctx.fillStyle = 'rgba(255, 215, 0, 0.1)';
+                this.ctx.lineWidth = 1.5;
+                this.ctx.shadowBlur = 12;
+                this.ctx.shadowColor = '#ffd700';
+                
+                const points = 6;
+                const outerRadius = size;
+                const innerRadius = size * 0.5;
+                
+                this.ctx.beginPath();
+                for (let i = 0; i < points * 2; i++) {
+                    const radius = i % 2 === 0 ? outerRadius : innerRadius;
+                    const angle = (i * Math.PI) / points;
+                    const x = Math.cos(angle) * radius;
+                    const y = Math.sin(angle) * radius;
+                    
+                    if (i === 0) {
+                        this.ctx.moveTo(x, y);
+                    } else {
+                        this.ctx.lineTo(x, y);
+                    }
+                }
+                this.ctx.closePath();
+                this.ctx.fill();
+                this.ctx.stroke();
+            }
+
+            drawRibbons() {
+                this.ribbons.forEach(ribbon => {
+                    this.ctx.save();
+                    this.ctx.globalAlpha = ribbon.alpha;
+                    this.ctx.strokeStyle = ribbon.color;
+                    this.ctx.lineWidth = 3;
+                    this.ctx.shadowBlur = 20;
+                    this.ctx.shadowColor = ribbon.color;
+                    
+                    // Update ribbon wave
+                    ribbon.wave += 0.02;
+                    
+                    this.ctx.beginPath();
+                    ribbon.points.forEach((point, index) => {
+                        point.y = point.originalY + Math.sin(ribbon.wave + index * 0.3) * ribbon.amplitude;
+                        
+                        if (index === 0) {
+                            this.ctx.moveTo(point.x, point.y);
+                        } else {
+                            this.ctx.lineTo(point.x, point.y);
+                        }
+                    });
+                    
+                    this.ctx.stroke();
+                    this.ctx.restore();
+                });
+            }
+
+            drawWaves() {
+                this.ctx.save();
+                this.ctx.globalAlpha = 0.3;
+                
+                for (let i = 0; i < 3; i++) {
+                    this.ctx.strokeStyle = i === 0 ? '#00ffff' : i === 1 ? '#ff1493' : '#ffd700';
+                    this.ctx.lineWidth = 2;
+                    this.ctx.shadowBlur = 15;
+                    this.ctx.shadowColor = this.ctx.strokeStyle;
+                    
+                    this.ctx.beginPath();
+                    for (let x = 0; x < this.canvas.width; x += 5) {
+                        const y = this.canvas.height * 0.7 + 
+                                 Math.sin((x + this.time * 2) * 0.01 + i * Math.PI * 0.5) * 80 +
+                                 Math.sin((x + this.time * 1.5) * 0.005 + i * Math.PI * 0.3) * 40;
+                        
+                        if (x === 0) {
+                            this.ctx.moveTo(x, y);
+                        } else {
+                            this.ctx.lineTo(x, y);
+                        }
+                    }
+                    this.ctx.stroke();
+                }
+                this.ctx.restore();
+            }
+
+            animate() {
+                this.time++;
+                
+                // Clear canvas with fade effect
+                this.ctx.fillStyle = 'rgba(10, 10, 10, 0.05)';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Draw all elements
+                this.drawWaves();
+                this.drawGridLines();
+                this.drawRibbons();
+                this.drawShapes();
+                this.drawParticles();
+                
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        // Initialize the hero background
+        document.addEventListener('DOMContentLoaded', () => {
+            new HeroBackground();
+        });
+    </script>
+</body>
+</html>
