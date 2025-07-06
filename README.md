@@ -247,8 +247,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For questions, suggestions, or collaboration opportunities:
 
-- **Portfolio**: [Your Portfolio URL]
-- **Email**: [your.email@example.com]
+- **Portfolio**: https://taposi-portfolio-5n368zobl-project-by-nirmal.vercel.app
+- **Email**: itz.nirmal.haldar@gmail.com
 - **LinkedIn**: [Your LinkedIn Profile]
 - **Behance**: [Your Behance Profile]
 
